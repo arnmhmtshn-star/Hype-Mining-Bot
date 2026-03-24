@@ -5,20 +5,26 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-const bot = new Bot(process.env.BOT_TOKEN);
+const BOT_TOKEN = process.env.BOT_TOKEN;
 const MINI_APP_URL = process.env.MINI_APP_URL;
+
+if (!BOT_TOKEN) throw new Error("BOT_TOKEN tanımlı değil.");
+if (!MINI_APP_URL) throw new Error("MINI_APP_URL tanımlı değil.");
+
+const bot = new Bot(BOT_TOKEN);
 
 bot.command("start", async (ctx) => {
   const telegramId = ctx.from.id.toString();
   const username = ctx.from.username || ctx.from.first_name;
-  const startParam = ctx.match;
+  const rawStartParam = ctx.match?.trim();
+  const startParam = /^\d+$/.test(rawStartParam || "") ? rawStartParam : null;
 
   const user = await getUserOrCreate({
     telegramId,
     username,
     firstName: ctx.from.first_name,
     lastName: ctx.from.last_name || "",
-    referredBy: startParam || null,
+    referredBy: startParam,
   });
 
   if (startParam && startParam !== telegramId && user.isNew) {
@@ -26,6 +32,7 @@ bot.command("start", async (ctx) => {
       `UPDATE users SET coins = coins + 500 WHERE telegram_id = $1`,
       [startParam]
     );
+
     await db.query(
       `INSERT INTO referrals (referrer_id, referred_id) VALUES ($1, $2)
        ON CONFLICT DO NOTHING`,
@@ -166,3 +173,5 @@ bot.on("message:successful_payment", async (ctx) => {
 bot.catch((err) => {
   console.error("Bot hatası:", err);
 });
+
+bot.start();
