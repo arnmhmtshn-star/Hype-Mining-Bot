@@ -4,6 +4,8 @@ import { webhookCallback } from "grammy";
 import bot from "./bot/index.js";
 
 dotenv.config();
+console.log("TOKEN PREFIX:", process.env.BOT_TOKEN?.slice(0, 8));
+console.log("TOKEN LENGTH:", process.env.BOT_TOKEN?.length);
 
 const app = express();
 const PORT = process.env.PORT || 3000;
