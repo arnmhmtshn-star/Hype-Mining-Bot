@@ -345,7 +345,7 @@ bot.callbackQuery("task_channel", async (ctx) => {
   const db = loadDB(); const user = getUser(db, ctx.from.id, ctx.from.first_name);
   await ctx.answerCallbackQuery();
   if (user.channel_joined) { await ctx.reply(t(user,"✅ Kanala zaten katıldın!","✅ Already joined!"), { reply_markup: mainMenu(user) }); return; }
-  const kb = new InlineKeyboard().url(t(user,"📢 Kanala Katıl","📢 Join Channel"), CHANNEL).row().text(t(user,"✅ Katıldım","✅ Joined"), "verify_channel");
+  const kb = new InlineKeyboard().url(t(user,"📢 Kanala Katıl","📢 Join Channel"), "https://t.me/HypeMiningCommunity").row().text(t(user,"✅ Katıldım","✅ Joined"), "verify_channel");
   await ctx.reply(t(user,"📢 Kanalımıza katıl ve +300 puan kazan!","📢 Join our channel and earn +300 points!"), { reply_markup: kb });
 });
 
@@ -378,7 +378,7 @@ bot.callbackQuery(/do_task_(.+)/, async (ctx) => {
   await ctx.answerCallbackQuery();
   if (!task || !task.active) { await ctx.reply(t(user,"❌ Görev bulunamadı!","❌ Task not found!"), { reply_markup: mainMenu(user) }); return; }
   if (user.completed_tasks.includes(taskId)) { await ctx.reply(t(user,"✅ Bu görevi zaten tamamladın!","✅ Already completed!"), { reply_markup: mainMenu(user) }); return; }
-  const kb = new InlineKeyboard().url(task.icon+" "+t(user,task.title,task.title_en), task.url).row().text(t(user,"✅ Tamamladım","✅ Done"), `verify_task_${taskId}`);
+  const kb = new InlineKeyboard().url("🔗 "+t(user,task.title,task.title_en), task.url && task.url.startsWith("http") ? task.url : "https://t.me/HypeMiningCommunity").row().text(t(user,"✅ Tamamladım","✅ Done"), `verify_task_${taskId}`);
   await ctx.reply(t(user,`📋 ${task.title}\n\nGörevi tamamla ve +${task.puan} puan kazan!`,`📋 ${task.title_en}\n\nComplete and earn +${task.puan} points!`), { reply_markup: kb });
 });
 
